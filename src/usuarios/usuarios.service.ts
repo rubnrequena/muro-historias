@@ -11,21 +11,29 @@ export class UsuariosService {
 
   crear(usuarioDTO: UsuarioDTO): Promise<Usuario> {
     return new Promise((resolve, reject) => {
-      const usuarioExiste = this.usuarios.find(usuario => usuario.usuario == usuarioDTO.usuario);
+      const usuarioExiste = this.usuarios.find(
+        (usuario) => usuario.usuario == usuarioDTO.usuario,
+      );
       if (usuarioExiste) {
-        reject({ error: 406, mensaje: 'usuario ya existe' })
+        reject({ error: 406, mensaje: 'usuario ya existe' });
       }
 
       const claveSegura: string = md5(usuarioDTO.clave);
-      const usuarioId: string = md5(Date.now() + usuarioDTO.usuario + claveSegura);
+      const usuarioId: string = md5(
+        Date.now() + usuarioDTO.usuario + claveSegura,
+      );
       const usuario: Usuario = {
         id: usuarioId,
         usuario: usuarioDTO.usuario,
         clave: claveSegura,
-        token: generarToken({ id: usuarioId, usuario: usuarioDTO.usuario, fechaSesion: new Date().toISOString() })
+        token: generarToken({
+          id: usuarioId,
+          usuario: usuarioDTO.usuario,
+          fechaSesion: new Date().toISOString(),
+        }),
       };
       this.usuarios.push(usuario);
-      resolve(usuario)
+      resolve(usuario);
     });
   }
 
@@ -36,9 +44,12 @@ export class UsuariosService {
         return usuario.usuario == usuarioDTO.usuario && usuario.clave == clave;
       });
       if (!usuario) return reject({ error: 401, mensaje: 'Usuario no existe' });
-      usuario.token = generarToken({ id: usuario.id, usuario: usuarioDTO.usuario, fechaSesion: new Date().toISOString() })
+      usuario.token = generarToken({
+        id: usuario.id,
+        usuario: usuarioDTO.usuario,
+        fechaSesion: new Date().toISOString(),
+      });
       resolve(usuario);
     });
   }
 }
-

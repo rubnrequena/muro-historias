@@ -8,7 +8,7 @@ import * as md5 from 'md5';
 @Injectable()
 export class NotasService {
   private notas: Nota[] = [];
-  private favoritos = new Map()
+  private favoritos = new Map();
 
   crear(notaDTO: NotaDTO, usuarioID: string): Nota {
     const tiempo: Date = new Date();
@@ -21,18 +21,20 @@ export class NotasService {
     };
     this.notas.push(nota);
     if (notaDTO.favorita == true) {
-      this.marcarFavorita({ notaId: nota.id, favorita: true }, usuarioID)
+      this.marcarFavorita({ notaId: nota.id, favorita: true }, usuarioID);
     }
     return nota;
   }
 
   todas(): Promise<Nota[]> {
     return new Promise((resolve) => {
-      resolve(this.notas.sort((a, b) => {
-        if (a.fecha < b.fecha) return 1;
-        else if (a.fecha > b.fecha) return -1;
-        else return 0;
-      }))
+      resolve(
+        this.notas.sort((a, b) => {
+          if (a.fecha < b.fecha) return 1;
+          else if (a.fecha > b.fecha) return -1;
+          else return 0;
+        }),
+      );
     });
   }
 
@@ -60,11 +62,13 @@ export class NotasService {
   }
 
   buscarFavoritas(usuarioId: string): Promise<Nota[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const notasFavoritas: string[] = this.favoritos.get(usuarioId);
-      resolve(notasFavoritas.map(notaId => {
-        return this.notas.find(nota => nota.id == notaId)
-      }))
+      resolve(
+        notasFavoritas.map((notaId) => {
+          return this.notas.find((nota) => nota.id == notaId);
+        }),
+      );
     });
   }
 

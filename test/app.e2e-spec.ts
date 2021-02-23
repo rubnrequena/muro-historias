@@ -6,10 +6,9 @@ import { Nota } from 'src/interface/nota.interface';
 
 let authToken: string;
 let authToken2: string;
-let notas: Nota[] = []
+let notas: Nota[] = [];
 
 describe('AppController (e2e)', () => {
-
   let app: INestApplication;
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -19,13 +18,13 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
-  })
+  });
 
   it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('Hello World!')
+      .expect('Hello World!');
   });
 
   it('/usuarios/registro: REGISTRO USUARIO #1', () => {
@@ -33,65 +32,67 @@ describe('AppController (e2e)', () => {
       .post('/usuarios/registro')
       .expect(201)
       .send({
-        "usuario": "usuario",
-        "clave": "1234"
-      })
-  })
+        usuario: 'usuario',
+        clave: '1234',
+      });
+  });
 
   it('/usuarios/registro: REGISTRO USUARIO #2', () => {
     return request(app.getHttpServer())
       .post('/usuarios/registro')
       .expect(201)
       .send({
-        "usuario": "usuario2",
-        "clave": "1234"
-      })
-  })
+        usuario: 'usuario2',
+        clave: '1234',
+      });
+  });
   it('/usuarios/registro: RECHAZAR USUARIO DUPLICADO', () => {
     return request(app.getHttpServer())
       .post('/usuarios/registro')
       .expect(406)
       .send({
-        "usuario": "usuario2",
-        "clave": "1234"
-      })
-  })
+        usuario: 'usuario2',
+        clave: '1234',
+      });
+  });
 
   it('/usuarios/login: USUARIO NO EXISTE', () => {
     return request(app.getHttpServer())
       .post('/usuarios/login')
       .expect(401)
       .send({
-        usuario: "usuario3",
-        clave: "1234"
-      })
-  })
+        usuario: 'usuario3',
+        clave: '1234',
+      });
+  });
   it('/usuarios/login LOGIN USUARIO #1', (done) => {
     return request(app.getHttpServer())
       .post('/usuarios/login')
       .expect(201)
       .send({
-        usuario: "usuario",
-        clave: "1234"
-      }).end((err, res) => {
-        if (err) return done(err);
-        authToken = `Bearer ${res.body.token}`
-        done();
+        usuario: 'usuario',
+        clave: '1234',
       })
-  })
+      .end((err, res) => {
+        if (err) return done(err);
+        authToken = `Bearer ${res.body.token}`;
+        done();
+      });
+  });
   it('/usuarios/login LOGIN USUARIO #2', (done) => {
     return request(app.getHttpServer())
       .post('/usuarios/login')
       .expect(201)
       .send({
-        usuario: "usuario2",
-        clave: "1234"
-      }).end((err, res) => {
-        if (err) return done(err);
-        authToken2 = `Bearer ${res.body.token}`
-        done();
+        usuario: 'usuario2',
+        clave: '1234',
       })
-  })
+      .end((err, res) => {
+        if (err) return done(err);
+        authToken2 = `Bearer ${res.body.token}`;
+        done();
+      });
+  });
 
   it('/notas/crear: CREAR NOTA #1 USUARIO #1', () => {
     return request(app.getHttpServer())
@@ -99,42 +100,43 @@ describe('AppController (e2e)', () => {
       .set('authorization', authToken)
       .expect(201)
       .send({
-        nota: "Esta es mi primera nota, y no es mi favorita ahora, pero lo será.",
-        favorita: false
-      })
-  })
+        nota:
+          'Esta es mi primera nota, y no es mi favorita ahora, pero lo será.',
+        favorita: false,
+      });
+  });
   it('/notas/crear: CREAR NOTA #2 USUARIO #1', () => {
     return request(app.getHttpServer())
       .post('/notas/crear')
       .set('authorization', authToken)
       .expect(201)
       .send({
-        nota: "Esta es mi segunda nota, y tampoco es mi favorita",
-        favorita: false
-      })
-  })
+        nota: 'Esta es mi segunda nota, y tampoco es mi favorita',
+        favorita: false,
+      });
+  });
   it('/notas/crear: CREAR NOTA #3 USUARIO #1', () => {
     return request(app.getHttpServer())
       .post('/notas/crear')
       .set('authorization', authToken)
       .expect(201)
       .send({
-        nota: "Esta es mi tercera nota, y esta si es mi favorita",
-        favorita: true
-      })
-  })
+        nota: 'Esta es mi tercera nota, y esta si es mi favorita',
+        favorita: true,
+      });
+  });
   it('/notas/crear: CREAR NOTA #1 USUARIO #2', () => {
     return request(app.getHttpServer())
       .post('/notas/crear')
       .set('authorization', authToken2)
       .expect(201)
       .send({
-        nota: "Esta es mi tercera nota, y esta si es mi favorita",
-        favorita: true
-      })
-  })
+        nota: 'Esta es mi tercera nota, y esta si es mi favorita',
+        favorita: true,
+      });
+  });
 
-  it('/notas/usuario MIS NOTAS', done => {
+  it('/notas/usuario MIS NOTAS', (done) => {
     return request(app.getHttpServer())
       .get('/notas/usuario')
       .set('authorization', authToken)
@@ -144,35 +146,31 @@ describe('AppController (e2e)', () => {
         expect(res.body).toHaveLength(3);
         notas = res.body;
         done();
-      })
-  })
+      });
+  });
 
-  it('/notas/favoritos: HAY 1 NOTA FAVORITA', done => {
+  it('/notas/favoritos: HAY 1 NOTA FAVORITA', (done) => {
     return request(app.getHttpServer())
       .get('/notas/favoritos')
       .set('authorization', authToken)
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
-        expect(res.body).toHaveLength(1)
+        expect(res.body).toHaveLength(1);
         done();
-      })
-  })
-  it('/notas/favorito: MARCAR 1era NOTA COMO FAVORITA', done => {
+      });
+  });
+  it('/notas/favorito: MARCAR 1era NOTA COMO FAVORITA', () => {
     return request(app.getHttpServer())
       .post('/notas/favorito')
       .set('authorization', authToken)
       .send({
         notaId: notas[0].id,
-        favorita: true
+        favorita: true,
       })
-      .expect(201)
-      .end((err, res) => {
-        if (err) return done(err);
-        done();
-      })
-  })
-  it('/notas/favoritos: HAY 2 NOTAS FAVORITA', done => {
+      .expect(201);
+  });
+  it('/notas/favoritos: HAY 2 NOTAS FAVORITA', (done) => {
     return request(app.getHttpServer())
       .get('/notas/favoritos')
       .set('authorization', authToken)
@@ -181,8 +179,8 @@ describe('AppController (e2e)', () => {
         if (err) return done(err);
         expect(res.body).toHaveLength(2);
         done();
-      })
-  })
+      });
+  });
 
   it('/notas/nota BUSCAR NOTA #2', (done) => {
     return request(app.getHttpServer())
@@ -191,10 +189,13 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
-        expect(res.body).toHaveProperty('nota', 'Esta es mi segunda nota, y tampoco es mi favorita')
+        expect(res.body).toHaveProperty(
+          'nota',
+          'Esta es mi segunda nota, y tampoco es mi favorita',
+        );
         done();
-      })
-  })
+      });
+  });
 
   it('/notas: LEER TODAS LAS NOTAS ( HAY 4 EN TOTAL)', (done) => {
     return request(app.getHttpServer())
@@ -204,8 +205,6 @@ describe('AppController (e2e)', () => {
         if (err) return done(err);
         expect(res.body).toHaveLength(4);
         done();
-      })
-  })
-
-
+      });
+  });
 });

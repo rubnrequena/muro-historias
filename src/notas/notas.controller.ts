@@ -10,7 +10,7 @@ import { Request } from 'express';
 
 @Controller('notas')
 export class NotasController {
-  constructor(private readonly notasServicios: NotasService) { }
+  constructor(private readonly notasServicios: NotasService) {}
 
   @Post('crear')
   crear(@Body() notaDTO: NotaDTO, @Req() req: Request) {
@@ -37,7 +37,10 @@ export class NotasController {
   }
 
   @Post('favorito')
-  favorita(@Body() notaFaorita: NotaFavoritaDTO, @Req() req: Request): Promise<Nota> {
+  favorita(
+    @Body() notaFaorita: NotaFavoritaDTO,
+    @Req() req: Request,
+  ): Promise<Nota> {
     return this.notasServicios
       .marcarFavorita(notaFaorita, req.sessionID)
       .catch((error) => error);
