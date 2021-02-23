@@ -1,5 +1,5 @@
 export interface Usuario {
-  id: string;
+  _id: string;
   usuario: string;
   clave: string;
   token: string;

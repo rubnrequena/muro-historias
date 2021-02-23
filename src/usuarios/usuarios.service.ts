@@ -5,11 +5,16 @@ import * as md5 from 'md5';
 import { Usuario } from '../interface/usuario.interface';
 import { generarToken } from '../utils/jwt';
 
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Usuario as UsuarioDoc, UsuarioDocumento, UsuarioEsquema } from '../esquemas/usuario.esquema';
+
 @Injectable()
 export class UsuariosService {
   private readonly usuarios: Usuario[] = [];
+  constructor(@InjectModel(UsuarioDoc.name) private usuarioModel: Model<UsuarioDocumento>) { }
 
-  crear(usuarioDTO: UsuarioDTO): Promise<Usuario> {
+  crear(usuarioDTO: UsuarioDTO): Promise<UsuarioDocumento> {
     return new Promise((resolve, reject) => {
       const usuarioExiste = this.usuarios.find(
         (usuario) => usuario.usuario == usuarioDTO.usuario,
@@ -19,37 +24,36 @@ export class UsuariosService {
       }
 
       const claveSegura: string = md5(usuarioDTO.clave);
-      const usuarioId: string = md5(
-        Date.now() + usuarioDTO.usuario + claveSegura,
-      );
-      const usuario: Usuario = {
-        id: usuarioId,
+
+      new this.usuarioModel({
         usuario: usuarioDTO.usuario,
         clave: claveSegura,
-        token: generarToken({
-          id: usuarioId,
-          usuario: usuarioDTO.usuario,
+      }).save().then((usuarioCreado) => {
+        usuarioCreado.token = generarToken({
+          id: usuarioCreado._id,
+          usuario: usuarioCreado.usuario,
           fechaSesion: new Date().toISOString(),
-        }),
-      };
-      this.usuarios.push(usuario);
-      resolve(usuario);
+        })
+        resolve(usuarioCreado)
+      }).catch(() => {
+        reject({ error: 406, mensaje: 'usuario ya existe' });
+      })
+
     });
   }
 
-  login(usuarioDTO: UsuarioDTO): Promise<Usuario> {
+  login(usuarioDTO: UsuarioDTO): Promise<UsuarioDocumento> {
     return new Promise((resolve, reject) => {
       const clave: string = md5(usuarioDTO.clave);
-      const usuario = this.usuarios.find((usuario) => {
-        return usuario.usuario == usuarioDTO.usuario && usuario.clave == clave;
-      });
-      if (!usuario) return reject({ error: 401, mensaje: 'Usuario no existe' });
-      usuario.token = generarToken({
-        id: usuario.id,
-        usuario: usuarioDTO.usuario,
-        fechaSesion: new Date().toISOString(),
-      });
-      resolve(usuario);
+      const usuario = this.usuarioModel.findOne({ usuario: usuarioDTO.usuario, clave }).then(usuario => {
+        if (!usuario) return reject({ error: 401, mensaje: 'Usuario no existe' });
+        usuario.token = generarToken({
+          id: usuario.usuario,
+          usuario: usuario.usuario,
+          fechaSesion: new Date().toISOString(),
+        });
+        resolve(usuario);
+      })
     });
   }
 }
