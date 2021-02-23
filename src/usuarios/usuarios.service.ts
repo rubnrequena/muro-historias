@@ -11,18 +11,10 @@ import { Usuario as UsuarioDoc, UsuarioDocumento, UsuarioEsquema } from '../esqu
 
 @Injectable()
 export class UsuariosService {
-  private readonly usuarios: Usuario[] = [];
   constructor(@InjectModel(UsuarioDoc.name) private usuarioModel: Model<UsuarioDocumento>) { }
 
   crear(usuarioDTO: UsuarioDTO): Promise<UsuarioDocumento> {
     return new Promise((resolve, reject) => {
-      const usuarioExiste = this.usuarios.find(
-        (usuario) => usuario.usuario == usuarioDTO.usuario,
-      );
-      if (usuarioExiste) {
-        reject({ error: 406, mensaje: 'usuario ya existe' });
-      }
-
       const claveSegura: string = md5(usuarioDTO.clave);
 
       new this.usuarioModel({
