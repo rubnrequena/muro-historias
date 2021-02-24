@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { NotaFavoritaDTO } from '../dto/nota-favorita.dto';
+import { MarcarFavoritoDTO } from '../dto/marcar-favorito.dto';
 import { NotaDTO } from '../dto/nota.dto';
 
 import { Model, Query } from 'mongoose';
@@ -67,7 +67,7 @@ export class NotasService {
     });
   }
 
-  marcarFavorita(nota: NotaFavoritaDTO, usuarioId: string): Promise<NotaDocumento> {
+  marcarFavorita(nota: MarcarFavoritoDTO, usuarioId: string): Promise<NotaDocumento> {
     return new Promise((resolve, reject) => {
       /* this.buscar(nota.notaId)
         .then(async (notaEncontrada) => {

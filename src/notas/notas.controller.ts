@@ -5,12 +5,11 @@ import { NotaDTO } from '../dto/nota.dto';
 import { NotasService } from './notas.service';
 
 import { ConsultarNotaDTO } from '../dto/consultar-nota.dto';
-import { NotaFavoritaDTO } from '../dto/nota-favorita.dto';
 import { Request } from 'express';
 
 @Controller('notas')
 export class NotasController {
-  constructor(private readonly notasServicios: NotasService) {}
+  constructor(private readonly notasServicios: NotasService) { }
 
   @Post('crear')
   crear(@Body() notaDTO: NotaDTO, @Req() req: Request) {
@@ -33,23 +32,6 @@ export class NotasController {
   nota(@Query() consultarNotaDTO: ConsultarNotaDTO): Promise<Nota> {
     return this.notasServicios
       .buscar(consultarNotaDTO.notaId)
-      .catch((error) => error);
-  }
-
-  @Post('favorito')
-  favorita(
-    @Body() notaFaorita: NotaFavoritaDTO,
-    @Req() req: Request,
-  ): Promise<Nota> {
-    return this.notasServicios
-      .marcarFavorita(notaFaorita, req.sessionID)
-      .catch((error) => error);
-  }
-
-  @Get('favoritos')
-  favoritas(@Req() req: Request): Promise<Nota[]> {
-    return this.notasServicios
-      .buscarFavoritas(req.sessionID)
       .catch((error) => error);
   }
 }
