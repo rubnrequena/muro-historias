@@ -2,31 +2,40 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { Nota } from 'src/interface/nota.interface';
+import { Nota as NotaInt } from './../src/interface/nota.interface';
+
+import { UsuariosService } from '../src/usuarios/usuarios.service';
+import { NotasService } from '../src/notas/notas.service';
 
 let authToken: string;
 let authToken2: string;
-let notas: Nota[] = [];
+let notas: NotaInt[] = [];
+
+let app: INestApplication;
+beforeAll(async () => {
+  const moduleFixture: TestingModule = await Test.createTestingModule({
+    imports: [AppModule],
+  }).compile();
+
+  app = moduleFixture.createNestApplication();
+  app.useGlobalPipes(new ValidationPipe());
+  await app.init();
+
+  const usuarioService = moduleFixture.get<UsuariosService>(UsuariosService);
+  await usuarioService.limpiar();
+  const notaService = moduleFixture.get<NotasService>(NotasService);
+  await notaService.limpiar();
+});
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication;
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    await app.init();
-  });
-
   it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('Hello World!');
   });
+});
 
+describe('USUARIOS', () => {
   it('/usuarios/registro: REGISTRO USUARIO #1', () => {
     return request(app.getHttpServer())
       .post('/usuarios/registro')
@@ -36,7 +45,6 @@ describe('AppController (e2e)', () => {
         clave: '1234',
       });
   });
-
   it('/usuarios/registro: REGISTRO USUARIO #2', () => {
     return request(app.getHttpServer())
       .post('/usuarios/registro')
@@ -55,7 +63,6 @@ describe('AppController (e2e)', () => {
         clave: '1234',
       });
   });
-
   it('/usuarios/login: USUARIO NO EXISTE', () => {
     return request(app.getHttpServer())
       .post('/usuarios/login')
@@ -93,7 +100,9 @@ describe('AppController (e2e)', () => {
         done();
       });
   });
+});
 
+describe('NOTAS', () => {
   it('/notas/crear: CREAR NOTA #1 USUARIO #1', () => {
     return request(app.getHttpServer())
       .post('/notas/crear')
@@ -102,7 +111,6 @@ describe('AppController (e2e)', () => {
       .send({
         nota:
           'Esta es mi primera nota, y no es mi favorita ahora, pero lo será.',
-        favorita: false,
       });
   });
   it('/notas/crear: CREAR NOTA #2 USUARIO #1', () => {
@@ -112,7 +120,6 @@ describe('AppController (e2e)', () => {
       .expect(201)
       .send({
         nota: 'Esta es mi segunda nota, y tampoco es mi favorita',
-        favorita: false,
       });
   });
   it('/notas/crear: CREAR NOTA #3 USUARIO #1', () => {
@@ -122,7 +129,6 @@ describe('AppController (e2e)', () => {
       .expect(201)
       .send({
         nota: 'Esta es mi tercera nota, y esta si es mi favorita',
-        favorita: true,
       });
   });
   it('/notas/crear: CREAR NOTA #1 USUARIO #2', () => {
@@ -132,10 +138,8 @@ describe('AppController (e2e)', () => {
       .expect(201)
       .send({
         nota: 'Esta es mi tercera nota, y esta si es mi favorita',
-        favorita: true,
       });
   });
-
   it('/notas/usuario MIS NOTAS', (done) => {
     return request(app.getHttpServer())
       .get('/notas/usuario')
@@ -148,43 +152,9 @@ describe('AppController (e2e)', () => {
         done();
       });
   });
-
-  it('/notas/favoritos: HAY 1 NOTA FAVORITA', (done) => {
-    return request(app.getHttpServer())
-      .get('/notas/favoritos')
-      .set('authorization', authToken)
-      .expect(200)
-      .end((err, res) => {
-        if (err) return done(err);
-        expect(res.body).toHaveLength(1);
-        done();
-      });
-  });
-  it('/notas/favorito: MARCAR 1era NOTA COMO FAVORITA', () => {
-    return request(app.getHttpServer())
-      .post('/notas/favorito')
-      .set('authorization', authToken)
-      .send({
-        notaId: notas[0].id,
-        favorita: true,
-      })
-      .expect(201);
-  });
-  it('/notas/favoritos: HAY 2 NOTAS FAVORITA', (done) => {
-    return request(app.getHttpServer())
-      .get('/notas/favoritos')
-      .set('authorization', authToken)
-      .expect(200)
-      .end((err, res) => {
-        if (err) return done(err);
-        expect(res.body).toHaveLength(2);
-        done();
-      });
-  });
-
   it('/notas/nota BUSCAR NOTA #2', (done) => {
     return request(app.getHttpServer())
-      .get(`/notas/nota?notaId=${notas[1].id}`)
+      .get(`/notas/nota?notaId=${notas[1]._id}`)
       .set('authorization', authToken)
       .expect(200)
       .end((err, res) => {
@@ -200,10 +170,35 @@ describe('AppController (e2e)', () => {
   it('/notas: LEER TODAS LAS NOTAS ( HAY 4 EN TOTAL)', (done) => {
     return request(app.getHttpServer())
       .get('/notas')
+      .set('authorization', authToken)
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
         expect(res.body).toHaveLength(4);
+        done();
+      });
+  });
+});
+
+describe('FAVORITOS', () => {
+  it('/favoritos/marcar: MARCAR 1era NOTA COMO FAVORITA', () => {
+    return request(app.getHttpServer())
+      .post('/favoritos/marcar')
+      .set('authorization', authToken)
+      .send({
+        notaId: notas[0]._id,
+        favorita: true,
+      })
+      .expect(201);
+  });
+  it('/favoritos: HAY 1 NOTA FAVORITA', (done) => {
+    return request(app.getHttpServer())
+      .get('/favoritos')
+      .set('authorization', authToken)
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err);
+        expect(res.body).toHaveLength(1);
         done();
       });
   });
