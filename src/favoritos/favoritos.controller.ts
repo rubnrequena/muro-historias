@@ -1,10 +1,8 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
-import { MarcarFavoritoDTO } from 'src/dto/marcar-favorito.dto';
-import { FavoritoDocumento } from 'src/esquemas/favorito.esquema';
-import { Nota } from 'src/interface/nota.interface';
+import { MarcarFavoritoDTO } from '../dto/marcar-favorito.dto';
 import { FavoritosService } from './favoritos.service';
-import { ObjectId, Schema, Types } from "mongoose";
+import { Types } from "mongoose";
 
 @Controller('favoritos')
 export class FavoritosController {

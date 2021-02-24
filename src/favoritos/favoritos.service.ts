@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Favorito as FavoritoDoc, FavoritoDocumento } from 'src/esquemas/favorito.esquema';
-import { Nota } from 'src/interface/nota.interface';
+import { Favorito as FavoritoDoc, FavoritoDocumento } from '../esquemas/favorito.esquema';
+import { Nota } from '../interface/nota.interface';
 
 
 @Injectable()
