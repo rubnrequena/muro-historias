@@ -1,56 +1,54 @@
 import { Injectable } from '@nestjs/common';
-import { NotaFavoritaDTO } from 'src/dto/nota-favorita.dto';
-import { NotaDTO } from 'src/dto/nota.dto';
-import { Nota } from '../interface/nota.interface';
+import { NotaFavoritaDTO } from '../dto/nota-favorita.dto';
+import { NotaDTO } from '../dto/nota.dto';
 
-import * as md5 from 'md5';
+import { Model, Query } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Schema } from "mongoose";
+import { Nota as NotaDoc, NotaDocumento } from '../esquemas/nota.esquema';
 
 @Injectable()
 export class NotasService {
-  private notas: Nota[] = [];
-  private favoritos = new Map();
+  constructor(@InjectModel(NotaDoc.name) private notaModel: Model<NotaDocumento>) { }
 
-  crear(notaDTO: NotaDTO, usuarioID: string): Nota {
-    const tiempo: Date = new Date();
-    const nota: Nota = {
-      id: md5(tiempo.getTime() + notaDTO.nota),
-      favorita: notaDTO.favorita || false,
-      fecha: tiempo,
-      nota: notaDTO.nota,
-      usuario: usuarioID,
-    };
-    this.notas.push(nota);
-    if (notaDTO.favorita == true) {
-      this.marcarFavorita({ notaId: nota.id, favorita: true }, usuarioID);
-    }
-    return nota;
+  crear(notaDTO: NotaDTO, usuarioID: string): Promise<NotaDocumento> {
+    return new Promise((resolve, reject) => {
+      const tiempo: Date = new Date();
+      return new this.notaModel({
+        favorita: notaDTO.favorita || false,
+        fecha: tiempo,
+        nota: notaDTO.nota,
+        usuario: usuarioID,
+      }).save().then(nota => {
+        if (notaDTO.favorita == true) {
+          this.marcarFavorita({ notaId: nota.id, favorita: true }, usuarioID);
+        }
+        resolve(nota);
+      }).catch(error =>
+        reject({ erro: 406, mensaje: 'ocurrio un error al registrar nota' }))
+    });
   }
 
-  todas(): Promise<Nota[]> {
+  todas(): Promise<NotaDocumento[]> {
     return new Promise((resolve) => {
       resolve(
-        this.notas.sort((a, b) => {
-          if (a.fecha < b.fecha) return 1;
-          else if (a.fecha > b.fecha) return -1;
-          else return 0;
-        }),
+        this.notaModel.find().sort({ fecha: -1 })
       );
     });
   }
 
-  buscar(notaId: string): Promise<Nota> {
-    return new Promise((resolve, reject) => {
-      const nota = this.notas.find((nota) => nota.id == notaId);
+  buscar(notaId: string): Promise<NotaDocumento> {
+    return new Promise(async (resolve, reject) => {
+      const nota = await this.notaModel.findById(notaId);
       if (!nota) reject({ error: 404, mensaje: `Nota '${notaId}' no existe` });
       else resolve(nota);
     });
   }
 
-  buscarPorUsuario(usuarioId: string): Promise<Nota[]> {
+  buscarPorUsuario(usuarioId: string): Promise<NotaDocumento[]> {
     return new Promise((resolve, reject) => {
-      const notas: Nota[] = this.notas.filter(
-        (nota) => nota.usuario == usuarioId,
-      );
+      const usuarioObjectId = new Schema.Types.ObjectId(usuarioId)
+      const notas: Query<NotaDocumento[], NotaDocumento> = this.notaModel.find({ usuario: usuarioObjectId })
       if (!notas)
         return reject({
           error: 404,
@@ -61,30 +59,25 @@ export class NotasService {
     });
   }
 
-  buscarFavoritas(usuarioId: string): Promise<Nota[]> {
+  buscarFavoritas(usuarioId: string): Promise<NotaDocumento[]> {
     return new Promise((resolve) => {
-      const notasFavoritas: string[] = this.favoritos.get(usuarioId);
-      resolve(
-        notasFavoritas.map((notaId) => {
-          return this.notas.find((nota) => nota.id == notaId);
-        }),
-      );
+      /* this.favoritoModel.find({ usuarioId }).then(favoritos => {
+
+      }) */
     });
   }
 
-  marcarFavorita(nota: NotaFavoritaDTO, usuarioId: string): Promise<Nota> {
-    return this.buscar(nota.notaId)
-      .then((notaEncontrada) => {
-        notaEncontrada.favorita = true;
-        let notasFavoritas: string[] = [];
-        const tieneFavoritos = this.favoritos.has(usuarioId);
-        if (tieneFavoritos) {
-          notasFavoritas = this.favoritos.get(usuarioId);
-        }
-        notasFavoritas.push(notaEncontrada.id);
-        this.favoritos.set(usuarioId, notasFavoritas);
-        return notaEncontrada;
-      })
-      .catch((error) => error);
+  marcarFavorita(nota: NotaFavoritaDTO, usuarioId: string): Promise<NotaDocumento> {
+    return new Promise((resolve, reject) => {
+      /* this.buscar(nota.notaId)
+        .then(async (notaEncontrada) => {
+          const favoritoExiste = await this.favoritoModel.findOne({ usuarioId, notaId: notaEncontrada._id });
+          if (favoritoExiste) return reject({ error: 406, mensaje: 'la nota ya esta en tus favoritos' })
+          const favorito = new this.favoritoModel({ usuarioId, notaId: notaEncontrada._id });
+          await favorito.save();
+          resolve(notaEncontrada);
+        })
+        .catch((error) => error); */
+    });
   }
 }
