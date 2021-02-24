@@ -40,7 +40,7 @@ export class UsuariosService {
       const usuario = this.usuarioModel.findOne({ usuario: usuarioDTO.usuario, clave }).then(usuario => {
         if (!usuario) return reject({ error: 401, mensaje: 'Usuario no existe' });
         usuario.token = generarToken({
-          id: usuario.usuario,
+          id: usuario._id,
           usuario: usuario.usuario,
           fechaSesion: new Date().toISOString(),
         });
