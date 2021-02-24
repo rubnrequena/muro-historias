@@ -23,8 +23,9 @@
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
+API desarrollado para publicar compartir tus notas con el mundo.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Desarrollado con: [Nest](https://github.com/nestjs/nest) framework TypeScript.
 
 ## Installation
 
