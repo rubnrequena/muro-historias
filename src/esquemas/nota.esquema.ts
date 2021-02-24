@@ -11,9 +11,6 @@ export class Nota {
   @Prop({ required: true })
   nota: string;
 
-  @Prop({ default: false })
-  favorita: boolean;
-
   @Prop({ default: new Date() })
   fecha: Date;
 }

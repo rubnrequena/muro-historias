@@ -15,7 +15,6 @@ export class NotasService {
     return new Promise((resolve, reject) => {
       const tiempo: Date = new Date();
       return new this.notaModel({
-        favorita: notaDTO.favorita || false,
         fecha: tiempo,
         nota: notaDTO.nota,
         usuario: usuarioID,
