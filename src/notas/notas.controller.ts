@@ -6,6 +6,7 @@ import { NotasService } from './notas.service';
 
 import { ConsultarNotaDTO } from '../dto/consultar-nota.dto';
 import { Request } from 'express';
+import { Types } from 'mongoose';
 
 @Controller('notas')
 export class NotasController {
@@ -13,13 +14,15 @@ export class NotasController {
 
   @Post('crear')
   crear(@Body() notaDTO: NotaDTO, @Req() req: Request) {
-    return this.notasServicios.crear(notaDTO, req.sessionID);
+    const usuarioId = new Types.ObjectId(req.sessionID)
+    return this.notasServicios.crear(notaDTO, usuarioId);
   }
 
   @Get('usuario')
   usuario(@Req() req: Request): Promise<Nota[]> {
+    const usuarioId = new Types.ObjectId(req.sessionID)
     return this.notasServicios
-      .buscarPorUsuario(req.sessionID)
+      .buscarPorUsuario(usuarioId)
       .catch((error) => error);
   }
 

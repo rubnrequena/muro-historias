@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongoSchema } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type NotaDocumento = Nota & Document;
 
 @Schema()
 export class Nota {
   @Prop({ required: true })
-  usuario: MongoSchema.Types.ObjectId;
+  usuario: Types.ObjectId;
 
   @Prop({ required: true })
   nota: string;
