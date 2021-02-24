@@ -48,4 +48,8 @@ export class UsuariosService {
       })
     });
   }
+
+  limpiar() {
+    return this.usuarioModel.deleteMany();
+  }
 }
