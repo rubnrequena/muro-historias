@@ -10,7 +10,6 @@ export class Favorito {
 
   @Prop({ type: Types.ObjectId })
   notaId: Types.ObjectId;
-
 }
 
 export const FavoritoEsquema = SchemaFactory.createForClass(Favorito);

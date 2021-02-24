@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { MarcarFavoritoDTO } from '../dto/marcar-favorito.dto';
 import { NotaDTO } from '../dto/nota.dto';
 
 import { Model, Query } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 import { Nota as NotaDoc, NotaDocumento } from '../esquemas/nota.esquema';
 
 @Injectable()
 export class NotasService {
-  constructor(@InjectModel(NotaDoc.name) private notaModel: Model<NotaDocumento>) { }
+  constructor(
+    @InjectModel(NotaDoc.name) private notaModel: Model<NotaDocumento>,
+  ) {}
 
   crear(notaDTO: NotaDTO, usuarioID: Types.ObjectId): Promise<NotaDocumento> {
     return new Promise((resolve, reject) => {
@@ -18,18 +19,20 @@ export class NotasService {
         fecha: tiempo,
         nota: notaDTO.nota,
         usuario: usuarioID,
-      }).save().then(nota => {
-        resolve(nota);
-      }).catch(error =>
-        reject({ erro: 406, mensaje: 'ocurrio un error al registrar nota' }))
+      })
+        .save()
+        .then((nota) => {
+          resolve(nota);
+        })
+        .catch(() =>
+          reject({ erro: 406, mensaje: 'ocurrio un error al registrar nota' }),
+        );
     });
   }
 
   todas(): Promise<NotaDocumento[]> {
     return new Promise((resolve) => {
-      resolve(
-        this.notaModel.find().sort({ fecha: -1 })
-      );
+      resolve(this.notaModel.find().sort({ fecha: -1 }));
     });
   }
 
@@ -43,7 +46,9 @@ export class NotasService {
 
   buscarPorUsuario(usuarioId: Types.ObjectId): Promise<NotaDocumento[]> {
     return new Promise((resolve, reject) => {
-      const notas: Query<NotaDocumento[], NotaDocumento> = this.notaModel.find({ usuario: usuarioId })
+      const notas: Query<NotaDocumento[], NotaDocumento> = this.notaModel.find({
+        usuario: usuarioId,
+      });
       if (!notas)
         return reject({
           error: 404,
@@ -52,5 +57,9 @@ export class NotasService {
         });
       resolve(notas);
     });
+  }
+
+  limpiar() {
+    return this.notaModel.deleteMany();
   }
 }

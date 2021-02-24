@@ -6,8 +6,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Usuario, UsuarioEsquema } from '../esquemas/usuario.esquema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Usuario.name, schema: UsuarioEsquema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: Usuario.name, schema: UsuarioEsquema }]),
+  ],
   controllers: [UsuariosController],
   providers: [UsuariosService],
 })
-export class UsuariosModule { }
+export class UsuariosModule {}

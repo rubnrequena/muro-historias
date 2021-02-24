@@ -10,17 +10,17 @@ import { Types } from 'mongoose';
 
 @Controller('notas')
 export class NotasController {
-  constructor(private readonly notasServicios: NotasService) { }
+  constructor(private readonly notasServicios: NotasService) {}
 
   @Post('crear')
   crear(@Body() notaDTO: NotaDTO, @Req() req: Request) {
-    const usuarioId = new Types.ObjectId(req.sessionID)
+    const usuarioId = new Types.ObjectId(req.sessionID);
     return this.notasServicios.crear(notaDTO, usuarioId);
   }
 
   @Get('usuario')
   usuario(@Req() req: Request): Promise<Nota[]> {
-    const usuarioId = new Types.ObjectId(req.sessionID)
+    const usuarioId = new Types.ObjectId(req.sessionID);
     return this.notasServicios
       .buscarPorUsuario(usuarioId)
       .catch((error) => error);

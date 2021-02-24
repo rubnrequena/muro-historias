@@ -8,8 +8,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FavoritosModule } from './favoritos/favoritos.module';
 
 @Module({
-  imports: [UsuariosModule, NotasModule, FavoritosModule, MongooseModule.forRoot('mongodb://localhost:27017/nest')],
+  imports: [
+    UsuariosModule,
+    NotasModule,
+    FavoritosModule,
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/nest'),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

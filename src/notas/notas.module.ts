@@ -8,7 +8,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Nota, NotaEsquema } from '../esquemas/nota.esquema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Nota.name, schema: NotaEsquema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: Nota.name, schema: NotaEsquema }]),
+  ],
   controllers: [NotasController],
   providers: [NotasService],
 })

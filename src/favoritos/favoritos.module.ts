@@ -6,9 +6,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Favorito, FavoritoEsquema } from '../esquemas/favorito.esquema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Favorito.name, schema: FavoritoEsquema }])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: Favorito.name, schema: FavoritoEsquema },
+    ]),
+  ],
   providers: [FavoritosService],
-  controllers: [FavoritosController]
+  controllers: [FavoritosController],
 })
 export class FavoritosModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
