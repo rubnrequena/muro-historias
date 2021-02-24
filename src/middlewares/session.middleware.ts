@@ -5,8 +5,6 @@ import { verificar } from '../utils/jwt';
 @Injectable()
 export class SessionMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    if (req.url == '/') return next();
-
     const headers: any = req.headers;
     let auth: string = headers['authorization'];
     if (!auth)
