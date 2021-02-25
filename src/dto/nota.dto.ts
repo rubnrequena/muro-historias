@@ -1,8 +1,11 @@
-import { IsBoolean, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
-export class NotaDTO {
+export class CrearNotaDTO {
+  @ApiProperty()
   @IsNotEmpty()
   readonly nota: string;
 
+  @ApiProperty({ enum: ["true", "false"] })
   readonly publico: boolean;
 }

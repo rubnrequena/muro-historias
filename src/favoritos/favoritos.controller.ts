@@ -3,11 +3,17 @@ import { Request } from 'express';
 import { MarcarFavoritoDTO } from '../dto/marcar-favorito.dto';
 import { FavoritosService } from './favoritos.service';
 import { Types } from 'mongoose';
+import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 
+@ApiHeader({
+  name: 'Authentication',
+  description: 'JTW Bearer Token',
+  required: true
+})
+@ApiBearerAuth()
 @Controller('favoritos')
 export class FavoritosController {
-  constructor(private readonly favoritoServicio: FavoritosService) {}
-
+  constructor(private readonly favoritoServicio: FavoritosService) { }
   @Post('marcar')
   favorito(
     @Body() notaFavorita: MarcarFavoritoDTO,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { NotaDTO } from '../dto/nota.dto';
+import { CrearNotaDTO } from '../dto/nota.dto';
 
 import { Model, Query } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,7 +12,7 @@ export class NotasService {
     @InjectModel(NotaDoc.name) private notaModel: Model<NotaDocumento>,
   ) { }
 
-  crear(notaDTO: NotaDTO, usuarioID: Types.ObjectId): Promise<NotaDocumento> {
+  crear(notaDTO: CrearNotaDTO, usuarioID: Types.ObjectId): Promise<NotaDocumento> {
     return new Promise((resolve, reject) => {
       const tiempo: Date = new Date();
       return new this.notaModel({
