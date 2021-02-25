@@ -12,7 +12,6 @@ import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 @ApiHeader({
   name: 'Authentication',
   description: 'JTW Bearer Token',
-  required: true,
 })
 @ApiBearerAuth()
 @Controller('notas')
