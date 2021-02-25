@@ -10,7 +10,7 @@ import { Nota as NotaDoc, NotaDocumento } from '../esquemas/nota.esquema';
 export class NotasService {
   constructor(
     @InjectModel(NotaDoc.name) private notaModel: Model<NotaDocumento>,
-  ) {}
+  ) { }
 
   crear(notaDTO: NotaDTO, usuarioID: Types.ObjectId): Promise<NotaDocumento> {
     return new Promise((resolve, reject) => {
@@ -19,6 +19,7 @@ export class NotasService {
         fecha: tiempo,
         nota: notaDTO.nota,
         usuario: usuarioID,
+        publico: notaDTO.publico
       })
         .save()
         .then((nota) => {
@@ -32,7 +33,7 @@ export class NotasService {
 
   todas(): Promise<NotaDocumento[]> {
     return new Promise((resolve) => {
-      resolve(this.notaModel.find().sort({ fecha: -1 }));
+      resolve(this.notaModel.find({ publico: true }).sort({ fecha: -1 }));
     });
   }
 

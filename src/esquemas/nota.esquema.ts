@@ -11,6 +11,9 @@ export class Nota {
   @Prop({ required: true })
   nota: string;
 
+  @Prop({ default: true })
+  publico: boolean;
+
   @Prop({ default: new Date() })
   fecha: Date;
 }

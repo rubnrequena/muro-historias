@@ -5,4 +5,5 @@ export interface Nota {
   readonly usuario: string;
   readonly nota: string;
   readonly fecha: Date;
+  readonly publico: boolean;
 }

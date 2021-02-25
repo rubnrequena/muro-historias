@@ -25,6 +25,7 @@ beforeAll(async () => {
   await usuarioService.limpiar();
   const notaService = moduleFixture.get<NotasService>(NotasService);
   await notaService.limpiar();
+  return;
 });
 
 describe('AppController (e2e)', () => {
@@ -128,7 +129,17 @@ describe('NOTAS', () => {
       .set('authorization', authToken)
       .expect(201)
       .send({
-        nota: 'Esta es mi tercera nota, y esta si es mi favorita',
+        nota: 'Esta es mi tercera nota, y es solo para mi',
+        publico: false
+      });
+  });
+  it('/notas/crear: CREAR NOTA #4 USUARIO #1', () => {
+    return request(app.getHttpServer())
+      .post('/notas/crear')
+      .set('authorization', authToken)
+      .expect(201)
+      .send({
+        nota: 'Esta es mi cuarta nota, y esta si es mi favorita',
       });
   });
   it('/notas/crear: CREAR NOTA #1 USUARIO #2', () => {
@@ -137,17 +148,17 @@ describe('NOTAS', () => {
       .set('authorization', authToken2)
       .expect(201)
       .send({
-        nota: 'Esta es mi tercera nota, y esta si es mi favorita',
+        nota: 'Esta es mi primera nota!',
       });
   });
-  it('/notas/usuario MIS NOTAS', (done) => {
+  it('/notas/usuario MIS NOTAS ( HAY 4 )', (done) => {
     return request(app.getHttpServer())
       .get('/notas/usuario')
       .set('authorization', authToken)
       .expect(200)
       .end((err, res) => {
         if (err) return done(err);
-        expect(res.body).toHaveLength(3);
+        expect(res.body).toHaveLength(4);
         notas = res.body;
         done();
       });
@@ -167,7 +178,7 @@ describe('NOTAS', () => {
       });
   });
 
-  it('/notas: LEER TODAS LAS NOTAS ( HAY 4 EN TOTAL)', (done) => {
+  it('/notas: LEER TODAS LAS NOTAS PUBLICAS ( HAY 4 EN TOTAL)', (done) => {
     return request(app.getHttpServer())
       .get('/notas')
       .set('authorization', authToken)
