@@ -49,25 +49,23 @@ $ npm run start:prod
 ## Test
 
 ```bash
-# unit tests
-$ npm run test
-
 # e2e tests
 $ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
 ```
 
-## Support
+## Rutas
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- ***GET*** [/](http://localhost:3000/) - root 
+- ***GET*** [/api](http://localhost:3000/api) - Documentacion del API [Swagger](https://swagger.io)
+- ***POST*** [/usuarios/registro](http://localhost:3000/usuarios/registro) Registro de usuarios 
+- ***POST*** [/usuarios/login](http://localhost:3000/usuarios/login) Inicio de sesión 
+- ***POST*** [/notas/crear](http://localhost:3000/notas/crear) Registro de usuarios 
+- ***GET*** [/notas/usuario](http://localhost:3000/notas/usuario) Consultar notas del usuario autenticado 
+- ***GET*** [/notas](http://localhost:3000/notas) Consultar todas las notas publicas 
+- ***GET*** [/notas/nota](http://localhost:3000/notas/nota) Consultar una sola nota 
+- ***POST*** [/favoritos/marcar](http://localhost:3000/favoritos/marcar) Marcar/desmarcar como favorita una nota 
+- ***GET*** [/favoritos](http://localhost:3000/favoritos) Consultar notas favoritas del usuario
 
 ## License
 
